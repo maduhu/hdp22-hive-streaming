@@ -262,7 +262,16 @@ hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager
 hive.compactor.initiator.on = true
 hive.compactor.worker.threads > 0 
 ```
-- Add your Twitter consumer key/secret, token/secret under [hdp22-hive-streaming/src/test/HiveTopology.java](https://github.com/abajwa-hw/hdp22-hive-streaming/blob/master/src/test/HiveTopology.java#L40)
+- Create a Twitter consumer key/secret
+  1. Open https://apps.twitter.com/
+  2. Click 'Create New App'
+  3. Use whatever Name & URL you like.
+  4. Once created, click "Keys and Access Tokens"
+  5. Click "Create my access token".
+  6. Use the consumer and access details in the next step
+
+- Add your Twitter consumer key/secret, token/secret in [~/hdp22-hive-streaming/src/test/HiveTopology.java](https://github.com/abajwa-hw/hdp22-hive-streaming/blob/master/src/test/HiveTopology.java#L40)
+  - *Tip: (edit from SSH with `vi` or `nano -w`)*
 
 - Create hive table for tweets that has transactions turned on and ORC enabled
 ```
@@ -275,7 +284,7 @@ sudo -u hdfs hadoop fs -chmod +w /apps/hive/warehouse/user_tweets
 
 - Optional: build the storm uber jar (may take 10-15min first time). You can skip this to use the pre-built jar in the target dir. 
 ```
-cd /root/hdp22-hive-streaming
+cd ~/hdp22-hive-streaming
 mvn package
 ```
 
@@ -286,7 +295,7 @@ service ntpd stop
 ntpdate pool.ntp.org
 service ntpd start
 ```
-- Using Ambari, make sure Storm is started first (it is stopped by default on the sandbox) and twitter_topology does not already exist
+- Using Ambari, make sure Storm is started first *(it is stopped by default on the sandbox)* and twitter_topology does not already exist
 - Open up the Storm webui
 
 http://sandbox.hortonworks.com:8744/
@@ -294,11 +303,11 @@ http://sandbox.hortonworks.com:8744/
 
 - Run the topology on the cluster and notice twitter_topology appears on Storm webui
 ```
-cd /root/hdp22-hive-streaming
+cd ~/hdp22-hive-streaming
 storm jar ./target/storm-integration-test-1.0-SNAPSHOT.jar test.HiveTopology thrift://sandbox.hortonworks.com:9083 default user_tweets twitter_topology
 ```
 
-Note: to run in local mode (ie without submitting it to cluster), run the above without the twitter_topology argument
+Note: to run in local mode *(i.e. without submitting it to cluster)*, run the above without the twitter_topology argument
 
 - In Storm UI, drill down into the topology to see the details and refresh periodically. The numbers under emitted, transferred and acked should start increasing.
 ![Image](../master/screenshots/screenshot-storm-topology.png?raw=true)
@@ -311,7 +320,7 @@ In Storm UI, you can also click on "Show Visualization" under "Topology Visualiz
 storm kill twitter_topology
 ```
 
-- After a few seconds, query the table and notice it now contains tweets
+- After a few seconds, query the Hive table and notice it now contains tweets
 ```
 select * from user_tweets;
 ```
